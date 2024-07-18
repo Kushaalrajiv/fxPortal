@@ -1,46 +1,33 @@
 const { ethers } = require("hardhat");
-const { FXRootContractAbi } = require('../artifacts/FXRootContractAbi.js');
-const ABI = require('../artifacts/contracts/Antarctica.sol/Antarctica.json');
-require('dotenv').config();
+const { FXRootContractAbi } = require("../artifacts/FXRootContractAbi.js");
+const ABI = require("../artifacts/contracts/Alien.sol/Alien.json");
+require("dotenv").config();
 
-// Transferring the asssets to FxChain 
+
 async function main() {
- 
-  const networkAddress = 'https://ethereum-goerli.publicnode.com';
+  const networkAddress = "https://ethereum-sepolia-rpc.publicnode.com";
   const privateKey = process.env.PRIVATE_KEY;
   const provider = new ethers.providers.JsonRpcProvider(networkAddress);
 
   const wallet = new ethers.Wallet(privateKey, provider);
+  const signer = wallet.connect(provider);
 
-  const [signer] = await ethers.getSigners();
+  const NFT = await ethers.getContractFactory("Alien", signer);
+  const nft = NFT.attach("0xB83f211B77B6937d74511140DC580247aF36cAD7");
+  const fxRootAddress = "0x9E688939Cb5d484e401933D850207D6750852053";
+  const fxRoot = new ethers.Contract(fxRootAddress, FXRootContractAbi, signer);
 
-  // Get ERC721A contract instance
-  const AntarcticaNFT = await ethers.getContractFactory("Antarctica");
-  const nft = await AntarcticaNFT.attach('0x81dd81A68E5c7C3F7b7a4a0fB43e04F274C9BF53');
-
-  // Get FXRoot contract instance
-  const fxRootAddress = '0xF9bc4a80464E48369303196645e876c8C7D972de';
-  const fxRoot = await ethers.getContractAt(FXRootContractAbi, fxRootAddress);
-
-  const approveTx = await nft.connect(signer).setApprovalForAll(fxRootAddress, true);
+  const Tids = [0, 1, 2, 3, 4];
+  const approveTx = await nft.setApprovalForAll(fxRootAddress, true);
   await approveTx.wait();
-  console.log('Approval confirmed');
+  console.log("Set Approval successfully called!");
 
-  const tokenIds = [0, 1, 2, 3, 4]; 
-
-  for (let i = 0; i < tokenIds.length; i++) {
-    const depositTx = await fxRoot.connect(signer).deposit(
-      nft.address,
-      wallet.address, 
-      tokenIds[i],
-      '0x6566'
-    );
-
+  for (const tokenId of Tids) {
+    const depositTx = await fxRoot.deposit(nft.address, wallet.address, tokenId, "0x6566");
     await depositTx.wait();
   }
 
-  console.log("Approved and deposited");
-
+  console.log("NFTs have been transferred!");
 }
 
 main()
