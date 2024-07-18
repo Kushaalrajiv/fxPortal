@@ -13,5 +13,13 @@ module.exports = {
       url: 'https://ethereum-goerli.publicnode.com',
       accounts: [process.env.PRIVATE_KEY],
     },
+    sepolia:{
+      url: 'https://ethereum-sepolia-rpc.publicnode.com',
+      accounts: [process.env.PRIVATE_KEY],
+    },
+    amoy:{
+      url: 'https://rpc-amoy.polygon.technology/',
+      accounts: [process.env.PRIVATE_KEY],
+    }
   }
 };
