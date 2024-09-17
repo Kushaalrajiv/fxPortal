@@ -5,7 +5,7 @@ async function main() {
 
   const privateKey = process.env.PRIVATE_KEY;
 
-  const networkAddress = "https://ethereum-goerli.publicnode.com";
+  const networkAddress = "https://ethereum-sepolia-rpc.publicnode.com";
 
   const provider = new ethers.providers.JsonRpcProvider(networkAddress);
 
